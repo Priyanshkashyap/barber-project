@@ -1,6 +1,17 @@
+const mongoose = require("mongoose");
+const { z } = require("zod");
+const{bsignupSchema}=require("./bsignupSchema");
 const { barber1 } = require("./db");
 async function signupbarber(bname, bpassword, bphone) {
   try {
+    const validation = bsignupSchema.safeParse({ bname, bpassword, bphone });
+     if (!validation.success) {
+      return { 
+        message: "Validation failed", 
+        success: false, 
+        errors: validation.error.format() 
+      };
+    }
     const existingBarber = await barber1.findOne({ baname: bname });
     if (existingBarber) {
       return { message: "Barbername already exists", success: false };
