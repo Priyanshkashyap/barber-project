@@ -18,12 +18,18 @@ export default function BSignup() {
       });
 
       console.log("Server response:", response.data);
+
       if (response.data.success) {
+        // ✅ Save data to localStorage
+        localStorage.setItem("barberToken", response.data.token); 
+        localStorage.setItem("barberName", bname);
+        localStorage.setItem("barberPhone", bphone);
+
         setSignupSuccessb(true); 
       } else {
         alert(response.data.message || "Signup failed");
       }
-      alert("Data sent successfully for signup!");
+
     } catch (error) {
       console.error("Error:", error.response?.data || error.message);
       alert("Something went wrong with signing up barber!");
@@ -59,11 +65,14 @@ export default function BSignup() {
       />
 
       <button onClick={handleSubmit}>Submit</button>
+
       {signupSuccessb && (
-              <p style={{ marginTop: "15px", color: "green" }}>
-                Signup successful! 👉 <Link to="/ULogin">Login here</Link>
-              </p>  )}
-       <p>
+        <p style={{ marginTop: "15px", color: "green" }}>
+          Signup successful! <Link to="/ULogin">Login here</Link>
+        </p>
+      )}
+
+      <p>
         Already have an account?{" "}
         <Link to="/BLogin">Login here</Link>
       </p>

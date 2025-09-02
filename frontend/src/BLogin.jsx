@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
-export default function BLogin(){
-const [vbname, setvbname] = useState("");
-const [vbpassword, setvbpassword] = useState("");
-const handleSubmit = async () => {
+import { Link, useNavigate } from "react-router-dom";
+
+export default function BLogin() {
+  const [vbname, setvbname] = useState("");
+  const [vbpassword, setvbpassword] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = async () => {
     try {
       const response = await axios.post("http://localhost:4000/backend/logverifybarber", {
         vbname,
@@ -12,13 +15,24 @@ const handleSubmit = async () => {
       });
 
       console.log("Server response from barber login:", response.data);
-      alert("Data sent for verification successfully!");
+
+      if (response.data.success) {
+        // ✅ Save barber info / token in localStorage
+        localStorage.setItem("barberToken", response.data.token);
+        localStorage.setItem("barberName", vbname);
+
+        alert("Login successful ✅");
+        navigate("/dashboard"); // redirect after login
+      } else {
+        alert(response.data.message || "Invalid login credentials");
+      }
     } catch (error) {
       console.error("Error with barber verification:", error.response?.data || error.message);
       alert("Something went wrong with verifying barber!");
     }
   };
-    return (
+
+  return (
     <div style={{ maxWidth: "300px", margin: "20px auto" }}>
       <h2>Input Barber Login Details</h2>
       <input
@@ -38,7 +52,8 @@ const handleSubmit = async () => {
       />
 
       <button onClick={handleSubmit}>Submit</button>
-       <p>
+
+      <p>
         Dont have an account?{" "}
         <Link to="/BSignup">Sign up here</Link>
       </p>
